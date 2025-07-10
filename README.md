@@ -1,6 +1,6 @@
 # FIX Protocol Simulator & Test Environment
 
-This project provides a professional-grade, configurable FIX protocol simulator and a dynamic testing client. It is designed to test the robustness, performance, and correctness of a trading bridge or FIX engine.
+This project provides a configurable FIX protocol simulator and a dynamic testing client. It is designed to test the robustness, performance, and correctness of a trading bridge or FIX engine.
 
 The simulator is dictionary-driven, allowing it to adapt to different FIX versions and custom counterparty specifications without code changes.
 
