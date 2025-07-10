@@ -1,4 +1,3 @@
-# src/fix_sim/fix_simulator.py
 import socketserver
 import simplefix
 import datetime as dt
@@ -38,12 +37,10 @@ PROTOCOL_CACHE = {}
 def get_protocol(begin_string: str) -> FixProtocol:
     if begin_string in PROTOCOL_CACHE:
         return PROTOCOL_CACHE[begin_string]
-    
     file_map = {"FIX.4.2": "FIX42.xml", "FIX.4.4": "FIX44.xml"}
     filename = file_map.get(begin_string)
     if not filename:
         raise ValueError(f"No dictionary found for BeginString {begin_string}")
-
     filepath = f"{DICT_PATH_PREFIX}/{filename}"
     protocol = FixProtocol(filepath)
     PROTOCOL_CACHE[begin_string] = protocol
@@ -52,9 +49,9 @@ def get_protocol(begin_string: str) -> FixProtocol:
 # --- Simulator Logic ---
 class FixSimulatorHandler(socketserver.BaseRequestHandler):
     def __init__(self, *args, **kwargs):
-        self.protocol = None
-        self.lp_settings = self.server.lp_settings
         super().__init__(*args, **kwargs)
+        self.lp_settings = self.server.lp_settings
+        self.protocol = None
 
     def handle(self):
         logger.info(f"Connection from {self.client_address}")
@@ -65,7 +62,6 @@ class FixSimulatorHandler(socketserver.BaseRequestHandler):
                 if not data:
                     logger.warning(f"Client {self.client_address} disconnected.")
                     break
-                
                 self.parser.append_buffer(data)
                 while True:
                     msg = self.parser.get_message()
@@ -137,7 +133,6 @@ class FixSimulatorHandler(socketserver.BaseRequestHandler):
         cl_ord_id = cancel_msg.get(11)
         orig_cl_ord_id = cancel_msg.get(41).decode()
         logger.info(f"Processing Cancel Request for OrigClOrdID: {orig_cl_ord_id}")
-
         order_id = str(uuid.uuid4())[:8] 
         exec_report = self.create_execution_report(
             cl_ord_id, order_id, 4, 4, 0, 0.0,
@@ -151,7 +146,6 @@ class FixSimulatorHandler(socketserver.BaseRequestHandler):
         orig_cl_ord_id = replace_msg.get(41).decode()
         new_qty = int(replace_msg.get(38))
         logger.info(f"Processing Replace Request for OrigClOrdID: {orig_cl_ord_id}")
-
         order_id = str(uuid.uuid4())[:8]
         exec_report = self.create_execution_report(
             cl_ord_id, order_id, 5, 0, new_qty, 0.0,
@@ -168,7 +162,6 @@ class FixSimulatorHandler(socketserver.BaseRequestHandler):
     def create_base_message(self, msg_type: str) -> simplefix.FixMessage:
         msg = simplefix.FixMessage()
         begin_string_str = self.protocol.path.split('/')[-1].replace('.xml', '')
-        # Convert filename format like 'FIX42' to protocol format 'FIX.4.2'
         if begin_string_str.startswith("FIX") and len(begin_string_str) == 5:
             begin_string_str = f"{begin_string_str[:3]}.{begin_string_str[3]}.{begin_string_str[4]}"
         msg.append_pair(8, begin_string_str.encode())
@@ -181,26 +174,16 @@ class FixSimulatorHandler(socketserver.BaseRequestHandler):
 
     def create_execution_report(self, cl_ord_id, order_id, exec_type, ord_status, leaves_qty, avg_px, symbol, side, cum_qty=0, last_px=0.0):
         report = self.create_base_message('8')
-        report.append_pair(17, str(uuid.uuid4())[:8])
-        report.append_pair(11, cl_ord_id)
-        report.append_pair(37, order_id)
-        report.append_pair(150, exec_type)
-        report.append_pair(39, ord_status)
-        report.append_pair(55, symbol)
-        report.append_pair(54, side)
-        report.append_pair(151, leaves_qty)
-        report.append_pair(14, cum_qty)
-        report.append_pair(6, avg_px)
+        report.append_pair(17, str(uuid.uuid4())[:8]); report.append_pair(11, cl_ord_id); report.append_pair(37, order_id)
+        report.append_pair(150, exec_type); report.append_pair(39, ord_status); report.append_pair(55, symbol)
+        report.append_pair(54, side); report.append_pair(151, leaves_qty); report.append_pair(14, cum_qty); report.append_pair(6, avg_px)
         if exec_type in (1, 2):
-            report.append_pair(32, cum_qty) 
+            report.append_pair(32, cum_qty)
             report.append_pair(31, last_px)
         return report
 
-# --- Callable Function for main.py ---
-def run_server(persona, host, port):
-    """
-    Sets up and runs the FIX simulator server.
-    """
+
+def run_server(persona, host, port, custom_dict_path=None):
     try:
         with open(CONFIG_FILE, 'r') as f:
             config = yaml.safe_load(f)
@@ -213,6 +196,7 @@ def run_server(persona, host, port):
     class FixTCPServer(socketserver.TCPServer):
         def __init__(self, server_address, RequestHandlerClass):
             self.lp_settings = lp_settings
+            # We don't actually need custom_dict_path here anymore as it's not used by the handler
             super().__init__(server_address, RequestHandlerClass)
     
     server = None
