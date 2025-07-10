@@ -1,0 +1,67 @@
+<fix major="4" minor="2">
+    <header>
+        <field name="BeginString" number="8" required="Y"/>
+        <field name="BodyLength" number="9" required="Y"/>
+        <field name="MsgType" number="35" required="Y"/>
+        <field name="SenderCompID" number="49" required="Y"/>
+        <field name="TargetCompID" number="56" required="Y"/>
+        <field name="MsgSeqNum" number="34" required="Y"/>
+        <field name="SendingTime" number="52" required="Y"/>
+    </header>
+    <trailer>
+        <field name="CheckSum" number="10" required="Y"/>
+    </trailer>
+    <messages>
+        <message name="Logon" msgtype="A">
+            <field name="EncryptMethod" number="98" required="Y"/>
+            <field name="HeartBtInt" number="108" required="Y"/>
+        </message>
+        <message name="NewOrderSingle" msgtype="D">
+            <field name="ClOrdID" number="11" required="Y"/>
+            <field name="Symbol" number="55" required="Y"/>
+            <field name="Side" number="54" required="Y"/>
+            <field name="TransactTime" number="60" required="Y"/>
+            <field name="OrderQty" number="38" required="Y"/>
+            <field name="OrdType" number="40" required="Y"/>
+            <field name="Price" number="44" required="N"/>
+        </message>
+        
+        <message name="OrderCancelRequest" msgtype="F">
+            <field name="OrigClOrdID" number="41" required="Y"/>
+            <field name="ClOrdID" number="11" required="Y"/>
+            <field name="Symbol" number="55" required="Y"/>
+            <field name="Side" number="54" required="Y"/>
+            <field name="TransactTime" number="60" required="Y"/>
+        </message>
+        <message name="OrderCancelReplaceRequest" msgtype="G">
+            <field name="OrigClOrdID" number="41" required="Y"/>
+            <field name="ClOrdID" number="11" required="Y"/>
+            <field name="Symbol" number="55" required="Y"/>
+            <field name="Side" number="54" required="Y"/>
+            <field name="TransactTime" number="60" required="Y"/>
+            <field name="OrderQty" number="38" required="Y"/>
+            <field name="OrdType" number="40" required="Y"/>
+            <field name="Price" number="44" required="N"/>
+        </message>
+    </messages>
+    <fields>
+       
+        <field number="8" name="BeginString" type="STRING"/>
+        <field number="9" name="BodyLength" type="INT"/>
+        <field number="10" name="CheckSum" type="STRING"/>
+        <field number="11" name="ClOrdID" type="STRING"/>
+        <field number="34" name="MsgSeqNum" type="INT"/>
+        <field number="35" name="MsgType" type="STRING"/>
+        <field number="38" name="OrderQty" type="QTY"/>
+        <field number="40" name="OrdType" type="CHAR"/>
+        <field number="41" name="OrigClOrdID" type="STRING"/>
+        <field number="44" name="Price" type="PRICE"/>
+        <field number="49" name="SenderCompID" type="STRING"/>
+        <field number="52" name="SendingTime" type="UTCTIMESTAMP"/>
+        <field number="54" name="Side" type="CHAR"/>
+        <field number="55" name="Symbol" type="STRING"/>
+        <field number="60" name="TransactTime" type="UTCTIMESTAMP"/>
+        <field number="98" name="EncryptMethod" type="INT"/>
+        <field number="108" name="HeartBtInt" type="INT"/>
+    </fields>
+</fix>

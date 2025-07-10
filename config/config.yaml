@@ -1,0 +1,31 @@
+# Configuration for multiple Liquidity Provider (LP) personas
+#
+# fill_rate: 0.0 to 1.0. A fill rate of 0.95 means 95% of orders will be filled, 5% rejected.
+# partial_fill_rate: 0.0 to 1.0. Of the orders that are filled, this is the chance of a partial fill.
+# avg_latency_ms: The average time in milliseconds the LP takes to respond.
+# latency_jitter_ms: Random variance added/subtracted from the average latency.
+
+lps:
+  Fast_ECN:
+    fill_rate: 0.99
+    partial_fill_rate: 0.05 # Fast ECNs rarely partial fill market orders
+    avg_latency_ms: 2
+    latency_jitter_ms: 1
+
+  Standard_Bank:
+    fill_rate: 0.95
+    partial_fill_rate: 0.20 # Banks are more likely to partial fill
+    avg_latency_ms: 40
+    latency_jitter_ms: 15
+
+  Slow_Aggregator:
+    fill_rate: 0.90
+    partial_fill_rate: 0.30
+    avg_latency_ms: 150
+    latency_jitter_ms: 50
+
+  Reject_Only_Test:
+    fill_rate: 0.0 # This LP will reject every single order
+    partial_fill_rate: 0.0
+    avg_latency_ms: 10
+    latency_jitter_ms: 2
