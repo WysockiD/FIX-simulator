@@ -7,6 +7,7 @@ import random
 import yaml
 import sys
 import logging
+import os
 from .fix_protocol import FixProtocol
 
 # --- Global Configuration ---
@@ -17,17 +18,25 @@ DICT_PATH_PREFIX = "dict"
 
 # --- Logging Setup ---
 def setup_logging():
+    """Configure and return the simulator logger."""
+    os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+
     logger = logging.getLogger("FIX_SIM")
     logger.setLevel(logging.INFO)
     logger.propagate = False
+
     if not logger.handlers:
         file_handler = logging.FileHandler(LOG_FILE, mode='a')
         console_handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S',
+        )
         file_handler.setFormatter(formatter)
         console_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
+
     return logger
 
 logger = setup_logging()
