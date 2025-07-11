@@ -57,10 +57,13 @@ def get_protocol(begin_string: str) -> FixProtocol:
 
 # --- Simulator Logic ---
 class FixSimulatorHandler(socketserver.BaseRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.lp_settings = self.server.lp_settings
+    def __init__(self, request, client_address, server):
+        # The BaseRequestHandler.__init__ will call our handle() method, so
+        # any attributes needed inside handle() must be initialized *before*
+        # calling super().__init__().
+        self.lp_settings = server.lp_settings
         self.protocol = None
+        super().__init__(request, client_address, server)
 
     def handle(self):
         logger.info(f"Connection from {self.client_address}")
