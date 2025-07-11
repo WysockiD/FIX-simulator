@@ -45,8 +45,10 @@ def client(fix_version, host, port):
     """
     click.echo(f"Starting Market Sim Client for FIX.{fix_version} connecting to {host}:{port}...")
     try:
-        # Construct the BeginString from the version
-        begin_string = f"FIX.{fix_version.replace('.', '')}".encode()
+        # Construct the BeginString from the version. We expect a value like
+        # "4.2" or "4.4" and need to pass "FIX.<ver>" (e.g. "FIX.4.2") to the
+        # client so the simulator can locate the correct dictionary.
+        begin_string = f"FIX.{fix_version}".encode()
         market_sim_client.run_client(host, port, begin_string)
     except Exception as e:
         click.echo(f"An error occurred: {e}", err=True)
